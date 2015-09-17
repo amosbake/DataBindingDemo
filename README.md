@@ -47,43 +47,6 @@ allprojects {
     private String note;//宝宝日记内容
     private Date recordTime;//宝宝日记记录时间
     private boolean isLike;//宝宝记录是否点赞
-
-    protected Baby(Parcel in) {
-        name = in.readString();
-        age = in.readInt();
-        note = in.readString();
-        recordTime=new Date(in.readLong());
-        isLike=in.readInt()==0;
-        mSex=SexType.values()[in.readInt()];
-    }
-
-    public static final Creator<Baby> CREATOR = new Creator<Baby>() {
-        @Override
-        public Baby createFromParcel(Parcel in) {
-            return new Baby(in);
-        }
-
-        @Override
-        public Baby[] newArray(int size) {
-            return new Baby[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeInt(age);
-        dest.writeString(note);
-        dest.writeLong(recordTime.getTime());
-        dest.writeInt(isLike ? 0 : 1);
-        dest.writeInt(mSex.ordinal());
-    }
-
     public enum SexType{
         GIRL("girl"),
         BOY("boy");
@@ -103,57 +66,6 @@ allprojects {
             }
             return null;
         }
-    }
-
-    public Baby() {
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public Date getRecordTime() {
-        return recordTime;
-    }
-
-    public void setRecordTime(Date recordTime) {
-        this.recordTime = recordTime;
-    }
-
-    public boolean isLike() {
-        return isLike;
-    }
-
-    public void setIsLike(boolean isLike) {
-        this.isLike = isLike;
-    }
-
-    public SexType getSex() {
-        return mSex;
-    }
-
-    public void setSex(SexType sex) {
-        mSex = sex;
     }
 }
  ```
@@ -187,10 +99,7 @@ allprojects {
         }
     }
 
-    public int getBabySexIcon() {
-        return mBaby.getSex().compareTo(Baby.SexType.BOY) == 0 ? R.mipmap.sex_boy : R.mipmap.sex_girl;
-    }
-
+ 
     public String getBabyAge() {
         return mBaby.getAge() + "岁";
     }
@@ -203,12 +112,127 @@ allprojects {
         return DateUtils.formatDateTime(mContext, mBaby.getRecordTime().getTime(), DateUtils.FORMAT_NUMERIC_DATE);
     }
 
-    public int getLikeColor(){
-        return mBaby.isLike()? Color.RED:Color.TRANSPARENT;
+    public String getRecordContent() {
+        return mBaby.getNote();
+    }
+
+    public int getLikeColor() {
+        return mBaby.isLike() ? Color.RED : Color.TRANSPARENT;
+    }
+
+    public View.OnClickListener onClickBaby() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, mBaby.toString(), Toast.LENGTH_SHORT).show();
+            }
+        };
+
     }
 }
  
  ```
+ 注意:
+			- 可以直接绑定数据模型,但为了保持低耦合性,在这里采用了多创建一个对应的视图模型
+			- 返回值其实是和xml文件中设置属性的值类型相对应的,`ImageView` 的`src` 还不能设置为资源引用(int),所以改为上面的`drawable`.
 2.	绑定`layout`
+ IDE会在编译过程中自动生成与`layout`名称相关的`ViewDataBinding`子类<br/>
+ `item_baby` ------> `ItemBabyBinding`
+```
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.mopel.databindingdemo.viewModel.BabyViewModel"/>
+    </data>
+
+    <android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
+            android:onClick="@{viewModel.onClickBaby}">
+
+            <RelativeLayout
+                android:id="@+id/baby_title"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_alignParentTop="true"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:gravity="center"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="@{viewModel.babyName}"/>
+
+                <TextView
+                    android:id="@+id/baby_age"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:gravity="center"
+                    android:textSize="14sp"
+                    android:text="@{viewModel.babyAge}"/>
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:layout_toLeftOf="@id/baby_age"
+                    android:src="@{viewModel.getBabySex}"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/baby_bottom"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignParentBottom="true"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:gravity="center"
+                    android:text="@{viewModel.recordTime}"/>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="@{viewModel.getLikeColor}"
+                    />
+            </RelativeLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_below="@id/baby_title"
+                android:layout_above="@id/baby_bottom"
+                android:text="@{viewModel.recordContent}"/>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</layout>
+```
+注意:
+		- IDE的智能提示在把根元素改为layout后有部分失效,如果不顺手可以另开一个再复制过来
+		- 根元素必须是layout ,绑定数据 的 name 关系到后面在控件中绑定的值,type 则是绑定类的完整类名
+		- `variable` 中使用`class` 可以自定义生成的`ViewDataBinding`类名
+		- 可以在`data`中使用`import`标签来导入要使用的包,如要写表达式` android:visibility="@{user.isAdult ? View.VISIBLE : View.GONE}"` 可以在data 中加入`  <import type="android.view.View"/>`
 3.	绑定`RecyclerViewAdapter`
 4.	在`Activity`中使用

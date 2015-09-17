@@ -1,5 +1,7 @@
 package com.mopel.databindingdemo.util;
 
+import android.util.Log;
+
 import com.mopel.databindingdemo.model.Baby;
 
 import java.util.Date;
@@ -12,6 +14,7 @@ import java.util.Random;
  */
 public class ModelUtil {
     private static final String TAG = "ModelUtil";
+    private static int num=0;
 
     public static int generateRandomInt(int range) {
         return new Random().nextInt(range);
@@ -34,10 +37,11 @@ public class ModelUtil {
         Baby baby = new Baby();
         baby.setName(generatRandomString(4));
         baby.setAge(generateRandomInt(8));
-        baby.setSex(generateRandomInt(2) > 1 ? Baby.SexType.BOY : Baby.SexType.GIRL);
+        baby.setSex(num % 2== 0 ? Baby.SexType.BOY : Baby.SexType.GIRL);
         baby.setNote(generatRandomString(32));
         baby.setRecordTime(new Date());
-        baby.setIsLike(generateRandomInt(2) > 1 ? true:false);
+        baby.setIsLike(num % 2 == 0 ? true : false);
+        num++;
         return baby;
     }
 
