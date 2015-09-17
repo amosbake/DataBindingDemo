@@ -76,6 +76,14 @@ public class BabyViewModel extends BaseObservable {
                 Toast.makeText(mContext, mBaby.toString(), Toast.LENGTH_SHORT).show();
             }
         };
+    }
 
+    public View.OnClickListener onClickLike(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBaby.setIsLike(!mBaby.isLike());
+            }
+        };
     }
 }

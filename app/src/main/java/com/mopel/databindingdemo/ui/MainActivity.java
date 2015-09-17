@@ -4,8 +4,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.mopel.databindingdemo.R;
 import com.mopel.databindingdemo.model.Baby;
@@ -17,7 +15,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView rvbaby;
+    private RecyclerView rvBaby;
     private List<Baby> mBabies;
     private BabyAdapter mAdapter;
     private RecyclerView.LayoutManager mManager;
@@ -25,13 +23,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        rvbaby= (RecyclerView) findViewById(R.id.rv_baby);
+        rvBaby = (RecyclerView) findViewById(R.id.rv_baby);
         mBabies=new ArrayList<>();
         mAdapter=new BabyAdapter(this);
         initData();
-        rvbaby.setAdapter(mAdapter);
-        rvbaby.setLayoutManager(mManager);
-        rvbaby.setHasFixedSize(true);
+        rvBaby.setAdapter(mAdapter);
+        rvBaby.setLayoutManager(mManager);
+        rvBaby.setHasFixedSize(true);
     }
 
     private void initData() {
