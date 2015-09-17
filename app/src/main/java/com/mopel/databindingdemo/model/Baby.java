@@ -126,4 +126,16 @@ public class Baby implements Parcelable{
     public void setSex(SexType sex) {
         mSex = sex;
     }
+
+    @Override
+    public String toString() {
+        return "Baby{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                ", mSex=" + mSex +
+                ", note='" + note + '\'' +
+                ", recordTime=" + recordTime +
+                ", isLike=" + isLike +
+                '}';
+    }
 }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<layout>
 
     <data>
         <variable
@@ -9,18 +8,19 @@
     </data>
 
     <android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
         <RelativeLayout
-            xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:paddingBottom="5dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:paddingTop="5dp">
+            android:paddingTop="5dp"
+            android:onClick="@{viewModel.onClickBaby}">
 
             <RelativeLayout
                 android:id="@+id/baby_title"
@@ -52,7 +52,8 @@
                     android:layout_height="30dp"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="10dp"
-                    android:layout_toLeftOf="@id/baby_age"/>
+                    android:layout_toLeftOf="@id/baby_age"
+                    android:src="@{viewModel.getBabySex}"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -74,8 +75,15 @@
                     android:layout_height="20dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
+                    android:background="@{viewModel.getLikeColor}"
                     />
             </RelativeLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_below="@id/baby_title"
+                android:layout_above="@id/baby_bottom"
+                android:text="@{viewModel.recordContent}"/>
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 </layout>

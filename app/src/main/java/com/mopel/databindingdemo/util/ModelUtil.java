@@ -34,10 +34,10 @@ public class ModelUtil {
         Baby baby = new Baby();
         baby.setName(generatRandomString(4));
         baby.setAge(generateRandomInt(8));
-        baby.setSex(generateRandomInt(1) > 0.5 ? Baby.SexType.BOY : Baby.SexType.GIRL);
+        baby.setSex(generateRandomInt(2) > 1 ? Baby.SexType.BOY : Baby.SexType.GIRL);
         baby.setNote(generatRandomString(32));
         baby.setRecordTime(new Date());
-        baby.setIsLike(generateRandomInt(1) > 0.5 ? true:false);
+        baby.setIsLike(generateRandomInt(2) > 1 ? true:false);
         return baby;
     }
 

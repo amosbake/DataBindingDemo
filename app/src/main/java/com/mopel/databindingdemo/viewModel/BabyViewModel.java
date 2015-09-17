@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.format.DateUtils;
+import android.view.View;
+import android.widget.Toast;
 
 import com.mopel.databindingdemo.R;
 import com.mopel.databindingdemo.model.Baby;
@@ -59,7 +61,21 @@ public class BabyViewModel extends BaseObservable {
         return DateUtils.formatDateTime(mContext, mBaby.getRecordTime().getTime(), DateUtils.FORMAT_NUMERIC_DATE);
     }
 
-    public int getLikeColor(){
-        return mBaby.isLike()? Color.RED:Color.TRANSPARENT;
+    public String getRecordContent() {
+        return mBaby.getNote();
+    }
+
+    public int getLikeColor() {
+        return mBaby.isLike() ? Color.RED : Color.TRANSPARENT;
+    }
+
+    public View.OnClickListener onClickBaby() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, mBaby.toString(), Toast.LENGTH_SHORT).show();
+            }
+        };
+
     }
 }
