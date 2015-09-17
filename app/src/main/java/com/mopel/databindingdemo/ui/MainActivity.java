@@ -2,6 +2,7 @@ package com.mopel.databindingdemo.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvbaby;
     private List<Baby> mBabies;
     private BabyAdapter mAdapter;
+    private RecyclerView.LayoutManager mManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
         mBabies=new ArrayList<>();
         mAdapter=new BabyAdapter(this);
         initData();
+        rvbaby.setAdapter(mAdapter);
+        rvbaby.setLayoutManager(mManager);
+        rvbaby.setHasFixedSize(true);
     }
 
     private void initData() {
@@ -36,5 +41,6 @@ public class MainActivity extends AppCompatActivity {
         mBabies.add(ModelUtil.createBaby());
         mBabies.add(ModelUtil.createBaby());
         mAdapter.setItems(mBabies);
+        mManager=new LinearLayoutManager(this);
     }
 }
