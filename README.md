@@ -71,8 +71,7 @@ allprojects {
  ```
  和与视图相关的视图模型`BabyViewModel`(简单的可以省略,直接和模型绑定视图就行,这里建立是为了方便的转化原模型中多样的数据类型)
  ```
- public class BabyViewModel extends BaseObservable {
-    private static final String TAG = "BabyViewModel";
+  public class BabyViewModel  {
     private Context mContext;
     private Baby mBaby;
 
@@ -235,4 +234,94 @@ allprojects {
 		- `variable` 中使用`class` 可以自定义生成的`ViewDataBinding`类名
 		- 可以在`data`中使用`import`标签来导入要使用的包,如要写表达式` android:visibility="@{user.isAdult ? View.VISIBLE : View.GONE}"` 可以在data 中加入`  <import type="android.view.View"/>`
 3.	绑定`RecyclerViewAdapter`
-4.	在`Activity`中使用
+使用数据绑定后,写`RecyclerView` 的`adapter`
+ 就变成了一件很轻松的事情了,只需要使用`DataBindingUtil`来绑定视图就行了,注意要绑定的`layout` 必须是包含`data` 元素的.
+ 其中的`executePendingBindings` 的作用是当变量的值更新的时候，binding 对象将在下个更新周期中更新。这样就会有一点时间间隔.如果来立刻更新,请看下一个部分
+```
+public class BabyAdapter extends RecyclerView.Adapter<BabyAdapter.BabyHolder> {
+    private static final String TAG = "BabyAdapter";
+    private List<Baby> mBabies;
+    private Context mContext;
+
+    public BabyAdapter(Context context) {
+        mContext = context;
+    }
+
+    public void setItems(List<Baby> babies){
+        mBabies=babies;
+        notifyDataSetChanged();
+    }
+
+
+    @Override
+    public BabyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new BabyHolder(LayoutInflater.from(mContext).inflate(R.layout.item_baby,parent,false));
+    }
+
+    @Override
+    public void onBindViewHolder(BabyHolder holder, int position) {
+        ItemBabyBinding babyBinding=DataBindingUtil.bind(holder.itemView);
+        babyBinding.setViewModel(new BabyViewModel(mContext,mBabies.get(position)));
+        holder.getBinding().executePendingBindings();
+    }
+
+    @Override
+    public int getItemCount() {
+        return mBabies.size();
+    }
+
+    public static class BabyHolder extends RecyclerView.ViewHolder {
+        private ViewDataBinding mBinding;
+
+        public BabyHolder(View itemView) {
+            super(itemView);
+            mBinding = DataBindingUtil.bind(itemView);
+        }
+
+        public ViewDataBinding getBinding() {
+            return mBinding;
+        }
+    }
+}
+```
+
+
+4.	数据和组件的更新机制
+在绑定数据后,数据对象的修改并不会更新UI,但是通过修改通知机制可以实现组件UI的更新.要实现这一功能,就需要数据对象实现以下接口中的一个[ `Observable `,`ObservableFields`,`ObservableList` ].
+我们可以通过添加`@Bindable`注释来标定监听数据,但通知数据变化则需要我们来手动调用`notifyPropertyChanged(BR.fieldName)`.
+```
+public class BabyViewModel extends BaseObservable {
+    private static final String TAG = "BabyViewModel";
+    private Context mContext;
+    private Baby mBaby;
+
+    public BabyViewModel(Context context, Baby baby) {
+        mContext = context;
+        mBaby = baby;
+    }
+    @Bindable
+    public String getBabyName() {
+        return mBaby.getName();
+    }
+    public View.OnClickListener onClickBaby() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBaby.setName("abc");
+                notifyPropertyChanged(BR.babyName);
+            }
+        };
+    }
+}
+```
+
+如果你只有少量属性需要更新,可以使用`ObservableFields` 
+```
+private static class User extends BaseObservable {
+   public final ObservableField<String> firstName =
+       new ObservableField<>();
+   public final ObservableField<String> lastName =
+       new ObservableField<>();
+   public final ObservableInt age = new ObservableInt();
+}
+```
